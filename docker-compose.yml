@@ -1,0 +1,33 @@
+---
+version: '3'
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
+      - MYSQL_DATABASE=db_glpi
+    ports:
+      - "306:3306"
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+  front:
+    image: diouxx/glpi:latest
+    ports:
+      - "80:80"
+    # volumes:
+    #   - ./config/config_db.php:/var/www/html/glpi/config/config_db.php
+    networks:
+      - app-network
+  admin:    
+    image: adminer    
+    ports:      
+      - "8080:8080"
+    networks:
+      - app-network
